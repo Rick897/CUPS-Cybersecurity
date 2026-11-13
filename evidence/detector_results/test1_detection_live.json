@@ -1,0 +1,50 @@
+[
+    {
+        "timestamp": 1794585391.1374383,
+        "type": "UNAUTHORIZED_ADVERTISEMENT",
+        "source_ip": "172.18.0.1",
+        "details": "Suspicious URI detected: http://172.17.0.1:8631/printers/LabPrinter"
+    },
+    {
+        "timestamp": 1794585391.1528468,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    },
+    {
+        "timestamp": 1794585391.1558633,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    },
+    {
+        "timestamp": 1794585391.1576455,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    },
+    {
+        "timestamp": 1794585391.1805358,
+        "type": "UNAUTHORIZED_ADVERTISEMENT",
+        "source_ip": "172.18.0.1",
+        "details": "Suspicious URI detected: http://172.17.0.1:8631/printers/LabPrinter"
+    },
+    {
+        "timestamp": 1794585391.183661,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    },
+    {
+        "timestamp": 1794585391.1888664,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    },
+    {
+        "timestamp": 1794585391.1911175,
+        "type": "SUSPICIOUS_IPP_CONNECTION",
+        "source_ip": "172.18.0.2",
+        "details": "Suspicious IPP connection towards 172.17.0.1"
+    }
+]

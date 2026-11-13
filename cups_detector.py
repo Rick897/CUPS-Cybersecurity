@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import time
 from collections import defaultdict
 from scapy.all import sniff, IP, UDP, TCP, Raw
@@ -8,6 +9,7 @@ alerts = []
 packet_history = defaultdict(list) # full packet history with timestamps
 TRUSTED_SUBNET = "172.18.0." # subnet of the vulhub environment, outside requests are probably threats
 VULHUB_INTERFACE = "br-a8377548e74c" # interface where 172.18.0.1 is
+output_dir = "evidence/detector_results"
 
 def log_alert(alert_type, src_ip, details):
     alert = {
@@ -27,12 +29,14 @@ def analyze_packet(packet):
     src_ip = packet[IP].src
     dst_ip = packet[IP].dst
 
-    # ==========================================
-    # RULE 1, 2 & 3: Analisi UDP 631 (Discovery)
-    # ==========================================
     #check if is on port 631...
-    if packet.haslayer(UDP) and packet[UDP].dport == 631 and packet.haslayer(Raw):
-        raw_payload = packet[Raw].load.decode('utf-8', errors='ignore')
+    if packet.haslayer(UDP) and packet[UDP].dport == 631:
+        
+        raw_bytes = bytes(packet[UDP])[8:]
+        raw_payload = raw_bytes.decode('utf-8', errors='ignore').strip('\x00').strip()
+        
+        if not raw_payload:
+            return
         
         # looking for flooding attempt
         current_time = time.time()
@@ -43,7 +47,19 @@ def analyze_packet(packet):
             log_alert("ABNORMAL_DISCOVERY_RATE", src_ip, "Possible flooding detected")
             
         # packets must follow the same structure, check
-        fields = raw_payload.split(' ')
+        parts = raw_payload.split('"')
+        
+        if len(parts) == 5:
+            # parts[0] is 'Type State URI ', parts[1] is 'Location', part[2] is ' ', parts[3] is 'Info', part[4] is ''
+            initial_fields = parts[0].strip().split(' ')
+            fields = initial_fields + [parts[1], parts[3]]
+        elif len(parts) == 1:
+            # no '"' present
+            fields = raw_payload.strip().split(' ')
+        else:
+            # weird case
+            fields = []
+
         if len(fields) != 5:
             log_alert("MALFORMED_PACKET", src_ip, f"Incorrect number of fields. Raw: {raw_payload.strip()}")
             return
@@ -63,8 +79,8 @@ def analyze_packet(packet):
 
 def main():
     parser = argparse.ArgumentParser(description="CUPS IDS Detector")
-    parser.add_argument("-r", "--read", help="File PCAP da analizzare offline")
-    parser.add_argument("-o", "--output", default="cups_alerts.json", help="File export (JSON)")
+    parser.add_argument("-r", "--read", help="File PCAP to analyze offline")
+    parser.add_argument("-o", "--output", help="File export (JSON)")
     args = parser.parse_args()
 
     try:
@@ -81,9 +97,18 @@ def main():
     finally:
         # Export results
         if alerts:
-            with open(args.output, "w") as f:
-                json.dump(alerts, f, indent=4)
-            print(f"[+] Saved {len(alerts)} alerts to file {args.output}")
+            if not args.output:
+                print("[-] No output file specified. Not saving output.")
+            else:                
+                if not os.path.isdir(output_dir):
+                    print(f"[-] !!! Error: directory '{output_dir}/' not found.")
+                else:
+                    filename = os.path.basename(args.output)
+                    final_path = os.path.join(output_dir, filename)
+                    
+                    with open(final_path, "w") as f:
+                        json.dump(alerts, f, indent=4)
+                    print(f"[+] Saved {len(alerts)} alerts to file {final_path}")
         else:
             print("[-] No alerts detected. No export needed.")
 
