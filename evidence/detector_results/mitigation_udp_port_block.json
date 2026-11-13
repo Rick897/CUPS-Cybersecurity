@@ -1,0 +1,8 @@
+[
+    {
+        "timestamp": 1794595009.231628,
+        "type": "UNAUTHORIZED_ADVERTISEMENT",
+        "source_ip": "172.18.0.1",
+        "details": "Suspicious URI detected: http://172.17.0.1:8631/printers/LabPrinter"
+    }
+]
