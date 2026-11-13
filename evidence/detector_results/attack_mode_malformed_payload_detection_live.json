@@ -1,0 +1,8 @@
+[
+    {
+        "timestamp": 1794589379.645237,
+        "type": "MALFORMED_PACKET",
+        "source_ip": "172.18.0.1",
+        "details": "Incorrect number of fields. Raw: 0 3 \" \" http://172.17.0.1:8631/printers/LabPrinter \"Office HQ\" \"Fake-Printer\""
+    }
+]
